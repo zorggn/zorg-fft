@@ -66,17 +66,15 @@ local function butterfly2(iRe, iIm, oidx, fstride, twRe, twIm, isInverse, m, p)
 	local i2 = oidx + m
 	local tw1 = 1
 	repeat
-		-- Do not manually do common subexpr. elimination.
-		-- EDIT: This ain't just that, this backs up values...
+		-- LuaJIT Numeric Performance Guide recommends not doing manual common subexpression elimination...
+		-- However, we can't do that here, because this backs up values into the locals.
 		local tRe = iRe[i2] * twRe[tw1] - iIm[i2] * twIm[tw1]
 		local tIm = iRe[i2] * twIm[tw1] + iIm[i2] * twRe[tw1]
 		tw1 = tw1 + fstride
-		-- TODO: This seems to be errorenous for some reason...
-		--       or at least, the buffer sizes using this function fluctuate...
-		iRe[i2] = iRe[i1] - --[[(iRe[i2] * twRe[tw1] - iIm[i2] * twIm[tw1]) --]] tRe
-		iIm[i2] = iIm[i1] - --[[(iRe[i2] * twIm[tw1] + iIm[i2] * twRe[tw1]) --]] tIm
-		iRe[i1] = iRe[i1] + --[[(iRe[i2] * twRe[tw1] - iIm[i2] * twIm[tw1]) --]] tRe
-		iIm[i1] = iIm[i1] + --[[(iRe[i2] * twIm[tw1] + iIm[i2] * twRe[tw1]) --]] tIm
+		iRe[i2] = iRe[i1] - tRe
+		iIm[i2] = iIm[i1] - tIm
+		iRe[i1] = iRe[i1] + tRe
+		iIm[i1] = iIm[i1] + tIm
 		i1 = i1 + 1
 		i2 = i2 + 1
 		m = m - 1
@@ -211,8 +209,6 @@ local function butterfly5(iRe, iIm, oidx, fstride, twRe, twIm, isInverse, m, p)
 	local yaIm, ybIm = twIm[1+fstride*m], twIm[1+fstride*2*m]
 	local scratchRe, scratchIm = {},{} --ffi.new('double[13]'), ffi.new('double[13]')
 
-	--print(#iRe, #iIm, #twRe, #twIm)
-
 	for u = 0, m-1 do
 		scratchRe[ 0] = iRe[i0]
 		scratchIm[ 0] = iIm[i0]
@@ -328,12 +324,21 @@ local function work(iRe, iIm, oRe, oIm, oidx, f, factors, fidx, twRe, twIm, fstr
 	oidx = begin
 
 	--TODO: Performance test
+	-- RESULTS: Not significant enough to care about which implementation is used.
+		-- 327-370 us average for one call w/ windowsize of 1024, using if-else chain;
+		-- 331-375 us average for one call w/ windowsize of 1024, using table access and else for generic;
+		-- 333-378 us average for one call w/ windowsize of 1024, using table access with metatable for generic.
+		-- 5618-6327 us, 5529-6182 us, 5579-6312 us for 16k window
+		-- 11-12 us, 11-14 us, 12-14 us for 32 window
+	---[[
+	bfyEnum[p](oRe, oIm, oidx, fstride, twRe, twIm, isInverse, m, p)
+	--]]
 	--[[
 	if bfyEnum[p] then bfyEnum[p](oRe, oIm, oidx, fstride, twRe, twIm, isInverse, m, p)
 	              else butterflyG(oRe, oIm, oidx, fstride, twRe, twIm, isInverse, m, p)
 	end
 	--]]
-	---[[
+	--[[
 	if     p == 2 then butterfly2(oRe, oIm, oidx, fstride, twRe, twIm, isInverse, m, p) --print "2"
 	elseif p == 3 then butterfly3(oRe, oIm, oidx, fstride, twRe, twIm, isInverse, m, p) --print "3"
 	elseif p == 4 then butterfly4(oRe, oIm, oidx, fstride, twRe, twIm, isInverse, m, p) --print "4"
