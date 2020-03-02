@@ -265,7 +265,7 @@ local function fft(inputRe, inputIm, outputRe, outputIm)
 		error "Missing parameter #1: No input defined."
 	end
 
-	assert(n < maxTwiddleSize,
+	assert(n <= maxTwiddleSize,
 		("Detected input size (%d) smaller than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
 
 	-- These "twiddle" arrays also need to be LöVE ByteData, so we can pass pointers around across threads.
@@ -448,7 +448,7 @@ local function ifft(inputRe, inputIm, outputRe, outputIm)
 		error "Missing parameter #1: No input defined."
 	end
 
-	assert(n < maxTwiddleSize,
+	assert(n <= maxTwiddleSize,
 		("Detected input size (%d) smaller than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
 
 	-- These "twiddle" arrays also need to be LöVE ByteData, so we can pass pointers around across threads.
@@ -631,7 +631,7 @@ local function fft_t(inputRe, inputIm, outputRe, outputIm)
 		error "Missing parameter #1: No input defined."
 	end
 
-	assert(n < maxTwiddleSize,
+	assert(n <= maxTwiddleSize,
 		("Detected input size (%d) smaller than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
 
 	-- These "twiddle" arrays also need to be LöVE ByteData, so we can pass pointers around across threads.
@@ -815,7 +815,7 @@ local function ifft_t(inputRe, inputIm, outputRe, outputIm)
 		error "Missing parameter #1: No input defined."
 	end
 
-	assert(n < maxTwiddleSize,
+	assert(n <= maxTwiddleSize,
 		("Detected input size (%d) smaller than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
 
 	-- These "twiddle" arrays also need to be LöVE ByteData, so we can pass pointers around across threads.
