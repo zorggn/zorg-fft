@@ -893,7 +893,7 @@ local function setupThreads(tc)
 			ch:push('procThread?')
 			ch:push(fromThread)
 		end)
-		thread[i] = fromThread:demand(0.1)
+		thread[i] = fromThread:demand(0.01)
 		if not thread[i] then
 			-- Clear toThread queue, since the query events never got processed... duh.
 			toThread[i]:clear()
@@ -912,7 +912,7 @@ local function freeThreads()
 		toThread[i]:push('stop')
 	end
 	-- Safety wait for threads to exit gracefully.
-	love.timer.sleep(0.1)
+	love.timer.sleep(0.01)
 end
 
 ----
