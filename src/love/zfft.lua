@@ -12,7 +12,6 @@
 
 -- TODO: 
 -- - Fix butterfly functions of radix 5 and the generic one, current implementations show ringing with pure tones.
--- - Threaded complex fft and ifft (WIP)
 
 local current_folder = (...):match("(.-)[^%.]+$")
 local ffi = require 'ffi'
