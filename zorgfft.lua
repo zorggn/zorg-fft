@@ -25,6 +25,11 @@ local thread = {}
 local threadCount
 local nextThread = 0
 
+-- Define twiddle factors only once, with the largest window size supported (16384) to hopefully curb memory usage fluctuation.
+local maxTwiddleSize = 2048
+local twiddlesRe = love.data.newByteData(maxTwiddleSize * ffi.sizeof('double'))
+local twiddlesIm = love.data.newByteData(maxTwiddleSize * ffi.sizeof('double'))
+
 -- Helper functions
 
 -- Calculates which butterfly functions to use, and how many times.
@@ -260,9 +265,10 @@ local function fft(inputRe, inputIm, outputRe, outputIm)
 		error "Missing parameter #1: No input defined."
 	end
 
+	assert(n < maxTwiddleSize,
+		("Detected input size (%d) smaller than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
+
 	-- These "twiddle" arrays also need to be LöVE ByteData, so we can pass pointers around across threads.
-	local twiddlesRe = love.data.newByteData(n * ffi.sizeof('double'))
-	local twiddlesIm = love.data.newByteData(n * ffi.sizeof('double'))
 	local twiddlesRePtr = ffi.cast("double *", twiddlesRe:getFFIPointer())
 	local twiddlesImPtr = ffi.cast("double *", twiddlesIm:getFFIPointer())
 
@@ -442,9 +448,10 @@ local function ifft(inputRe, inputIm, outputRe, outputIm)
 		error "Missing parameter #1: No input defined."
 	end
 
+	assert(n < maxTwiddleSize,
+		("Detected input size (%d) smaller than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
+
 	-- These "twiddle" arrays also need to be LöVE ByteData, so we can pass pointers around across threads.
-	local twiddlesRe = love.data.newByteData(n * ffi.sizeof('double'))
-	local twiddlesIm = love.data.newByteData(n * ffi.sizeof('double'))
 	local twiddlesRePtr = ffi.cast("double *", twiddlesRe:getFFIPointer())
 	local twiddlesImPtr = ffi.cast("double *", twiddlesIm:getFFIPointer())
 
@@ -624,9 +631,10 @@ local function fft_t(inputRe, inputIm, outputRe, outputIm)
 		error "Missing parameter #1: No input defined."
 	end
 
+	assert(n < maxTwiddleSize,
+		("Detected input size (%d) smaller than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
+
 	-- These "twiddle" arrays also need to be LöVE ByteData, so we can pass pointers around across threads.
-	local twiddlesRe = love.data.newByteData(n * ffi.sizeof('double'))
-	local twiddlesIm = love.data.newByteData(n * ffi.sizeof('double'))
 	local twiddlesRePtr = ffi.cast("double *", twiddlesRe:getFFIPointer())
 	local twiddlesImPtr = ffi.cast("double *", twiddlesIm:getFFIPointer())
 
@@ -807,9 +815,10 @@ local function ifft_t(inputRe, inputIm, outputRe, outputIm)
 		error "Missing parameter #1: No input defined."
 	end
 
+	assert(n < maxTwiddleSize,
+		("Detected input size (%d) smaller than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
+
 	-- These "twiddle" arrays also need to be LöVE ByteData, so we can pass pointers around across threads.
-	local twiddlesRe = love.data.newByteData(n * ffi.sizeof('double'))
-	local twiddlesIm = love.data.newByteData(n * ffi.sizeof('double'))
 	local twiddlesRePtr = ffi.cast("double *", twiddlesRe:getFFIPointer())
 	local twiddlesImPtr = ffi.cast("double *", twiddlesIm:getFFIPointer())
 
@@ -873,6 +882,13 @@ local function nextFastSize(n)
 	return n
 end
 
+-- Pre-define the max size of the twiddle arrays (them being static should not be an issue with any of the API methods)
+local function setMaxTwiddleSize(size)
+	maxTwiddleSize = size
+	twiddlesRe = love.data.newByteData(size * ffi.sizeof('double'))
+	twiddlesIm = love.data.newByteData(size * ffi.sizeof('double'))
+end
+
 -- Spawns threadCount threads that the threaded functions can utilize.
 local function setupThreads(tc)
 
@@ -917,4 +933,4 @@ end
 
 ----
 return {fft = fft, ifft = ifft, fft_t = fft_t, ifft_t = ifft_t,
-	nextFastSize = nextFastSize, setupThreads = setupThreads, freeThreads = freeThreads}
+	nextFastSize = nextFastSize, setMaxTwiddleSize = setMaxTwiddleSize, setupThreads = setupThreads, freeThreads = freeThreads}
