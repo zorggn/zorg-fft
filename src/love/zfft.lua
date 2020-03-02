@@ -21,7 +21,7 @@ local cos,sin,pi = math.cos,math.sin,math.pi
 local fromThread -- Singleton in current Thread that requires this library.
 local toThread = {} -- List of Channels, one for each Thread (Uses named channels so other Threads can also utilize workers.)
 local thread = {}
-local threadCount
+local threadCount = 0
 local nextThread = 0
 
 -- Define twiddle factors only once, with the largest window size supported (16384) to hopefully curb memory usage fluctuation.
@@ -502,6 +502,9 @@ end
 -- Threaded fast fourier transform (time -> freq domain)
 local function fft_t(inputRe, inputIm, outputRe, outputIm)
 
+	assert(threadCount > 0,
+		"No worker threads created, use the setupThreads function to spawn them!")
+
 	-- Size of input and output arrays
 	local n
 
@@ -685,6 +688,9 @@ end
 
 -- Threaded inverse fast fourier transform (freq -> time domain)
 local function ifft_t(inputRe, inputIm, outputRe, outputIm)
+
+	assert(threadCount > 0,
+		"No worker threads created, use the setupThreads function to spawn them!")
 
 	-- Size of input and output arrays
 	local n
