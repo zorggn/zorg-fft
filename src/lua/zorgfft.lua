@@ -364,7 +364,7 @@ local function fft(inputRe, inputIm)
 	return outputRe, outputIm
 end
 
-local function ifft(n, inputRe, inputIm)
+local function ifft(inputRe, inputIm)
 
 	assert(type(inputRe) == 'table',
 		"A lua table needs to be passed as the first parameter.")
