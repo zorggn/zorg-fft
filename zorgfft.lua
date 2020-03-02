@@ -92,33 +92,32 @@ local function work_t(iRe, iIm, oRe, oIm, oidx, f, factors, fidx, twRe, twIm, fs
 		for k = 0, p-1 do
 			-- Request threads to call work with these params (if there are less threads than top level calls, we do round-robin)
 			local tid = k % threadCount
-			--print(("Work: k = %d, tid = %d, channel: %s"):format(k, tid, tostring(toThread[tid])))
-			toThread[tid]:performAtomic(function(ch)
-				-- Work request
-				ch:push('work')
-				-- The originator thread where work_t was called
-				ch:push(fromThread)
-				-- All the parameters to be passed to work
-				-- TEST: Check whether this, or wrapping into a flat lua table is more performant...
-				ch:push(BDiRe)
-				ch:push(BDiIm)
-				ch:push(BDoRe)
-				ch:push(BDoIm)
-				ch:push(oidx + m * k)
-				ch:push(f + fstride * istride * k)
-				ch:push(BDfactors)
-				ch:push(fidx)
-				ch:push(BDtwRe)
-				ch:push(BDtwIm)
-				ch:push(fstride * p)
-				ch:push(istride)
-				ch:push(isInverse)
-			end)			
+			
+			local state = {}
+			state[ 1] = 'work'     -- Work request
+			state[ 2] = fromThread -- The originator thread where work_t was called
+			-- All the parameters to be passed to work
+			state[ 3] = BDiRe
+			state[ 4] = BDiIm
+			state[ 5] = BDoRe
+			state[ 6] = BDoIm
+			state[ 7] = oidx + m * k
+			state[ 8] = f + fstride * istride * k
+			state[ 9] = BDfactors
+			state[10] = fidx
+			state[11] = BDtwRe
+			state[12] = BDtwIm
+			state[13] = fstride * p
+			state[14] = istride
+			state[15] = isInverse
+
+			toThread[tid]:push(state)
 		end
+
 		-- Check if all processing completed
 		local k = p
 		while k ~= 0 do
-			if fromThread:demand(0.01) then
+			if fromThread:pop() then
 				k = k - 1
 			end
 		end

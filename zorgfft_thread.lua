@@ -67,26 +67,26 @@ while true do
 	elseif data == 'stop' then
 		-- Worker thread shutdown
 		return
-	elseif data == 'work' then
+	elseif type(data) == 'table' then
 		-- Worker thread process request
-		fromChannel = inChannel:pop()
+		fromChannel = data[ 2]
 
 		local iRe, iIm, oRe, oIm, oidx, f, factors, fidx, twRe, twIm, fstride, istride, isInverse,
 			BDiRe, BDiIm, BDoRe, BDoIm, BDFactors, BDtwRe, BDtwIm
 
-		BDiRe		= inChannel:pop()
-		BDiIm		= inChannel:pop()
-		BDoRe		= inChannel:pop()
-		BDoIm		= inChannel:pop()
-		oidx		= inChannel:pop()
-		f			= inChannel:pop()
-		BDfactors	= inChannel:pop()
-		fidx		= inChannel:pop()
-		BDtwRe		= inChannel:pop()
-		BDtwIm		= inChannel:pop()
-		fstride		= inChannel:pop()
-		istride		= inChannel:pop()
-		isInverse	= inChannel:pop()
+		BDiRe		= data[ 3]
+		BDiIm		= data[ 4]
+		BDoRe		= data[ 5]
+		BDoIm		= data[ 6]
+		oidx		= data[ 7]
+		f			= data[ 8]
+		BDfactors	= data[ 9]
+		fidx		= data[10]
+		BDtwRe		= data[11]
+		BDtwIm		= data[12]
+		fstride		= data[13]
+		istride		= data[14]
+		isInverse	= data[15]
 
 		iRe		= ffi.cast("double *", BDiRe:getFFIPointer())
 		iIm		= ffi.cast("double *", BDiIm:getFFIPointer())
