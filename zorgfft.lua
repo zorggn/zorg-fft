@@ -26,7 +26,7 @@ local threadCount
 local nextThread = 0
 
 -- Define twiddle factors only once, with the largest window size supported (16384) to hopefully curb memory usage fluctuation.
-local maxTwiddleSize = 2048
+local maxTwiddleSize = 32
 local twiddlesRe = love.data.newByteData(maxTwiddleSize * ffi.sizeof('double'))
 local twiddlesIm = love.data.newByteData(maxTwiddleSize * ffi.sizeof('double'))
 
