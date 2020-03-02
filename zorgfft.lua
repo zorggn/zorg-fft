@@ -23,6 +23,7 @@ local fromThread -- Singleton in current Thread that requires this library.
 local toThread = {} -- List of Channels, one for each Thread (Uses named channels so other Threads can also utilize workers.)
 local thread = {}
 local threadCount
+local nextThread = 0
 
 -- Helper functions
 
@@ -299,12 +300,39 @@ local function fft(inputRe, inputIm, outputRe, outputIm)
 	local inputStride = 1
 
 	-- Guts
-	work(inputRePtr, inputImPtr,
+	--[[
+	work_t(inputRePtr, inputImPtr,
 		outputRePtr, outputImPtr, outputIndex,
 		factorCurrent, factorsPtr, factorIndex,
 		twiddlesRePtr, twiddlesImPtr,
 		factorStride, inputStride,
 		false)
+	--]]
+
+	local state = {}
+	state[ 1] = 'work'     -- Work request
+	state[ 2] = fromThread -- The originator thread where work_t was called
+	-- All the parameters to be passed to work
+	state[ 3] = inputRe
+	state[ 4] = inputIm
+	state[ 5] = outputRe
+	state[ 6] = outputIm
+	state[ 7] = outputIndex
+	state[ 8] = factorCurrent
+	state[ 9] = factors
+	state[10] = factorIndex
+	state[11] = twiddlesRe
+	state[12] = twiddlesIm
+	state[13] = factorStride
+	state[14] = inputStride
+	state[15] = false
+
+	toThread[nextThread]:push(state)
+
+	nextThread = (nextThread + 1) % threadCount
+
+	-- Check if processing completed
+	--while true do if fromThread:pop() then break end end
 
 	----
 	return outputRe, outputIm
@@ -481,12 +509,39 @@ local function ifft(inputRe, inputIm, outputRe, outputIm)
 	local inputStride = 1
 
 	-- Guts
-	work(inputRePtr, inputImPtr,
+	--[[
+	work_t(inputRePtr, inputImPtr,
 		outputRePtr, outputImPtr, outputIndex,
 		factorCurrent, factorsPtr, factorIndex,
 		twiddlesRePtr, twiddlesImPtr,
 		factorStride, inputStride,
 		true)
+	--]]
+
+	local state = {}
+	state[ 1] = 'work'     -- Work request
+	state[ 2] = fromThread -- The originator thread where work_t was called
+	-- All the parameters to be passed to work
+	state[ 3] = inputRe
+	state[ 4] = inputIm
+	state[ 5] = outputRe
+	state[ 6] = outputIm
+	state[ 7] = outputIndex
+	state[ 8] = factorCurrent
+	state[ 9] = factors
+	state[10] = factorIndex
+	state[11] = twiddlesRe
+	state[12] = twiddlesIm
+	state[13] = factorStride
+	state[14] = inputStride
+	state[15] = true
+
+	toThread[nextThread]:push(state)
+
+	nextThread = (nextThread + 1) % threadCount
+
+	-- Check if processing completed
+	--while true do if fromThread:pop() then break end end
 
 	----
 	return outputRe, outputIm
