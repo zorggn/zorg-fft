@@ -6,7 +6,7 @@
 -- and this way, we can also require it into zorgfft_thread.lua.
 
 local ffi = require 'ffi'
-local cos,sin,pi = math.cos,math.sin,math.pi
+local cos, sin, pi = math.cos, math.sin, math.pi
 
 
 
@@ -216,8 +216,8 @@ local function butterfly5(iRe, iIm, oidx, fstride, twRe, twIm, isInverse, m, p)
 end
 
 local function butterflyG(iRe, iIm, oidx, fstride, twRe, twIm, isInverse, m, p)
-	local n = #iRe+1 --ffi.sizeof(iRe) / ffi.sizeof('double')
-	local scratchRe, scratchIm = {},{} --ffi.new('double[' .. p .. ']'), ffi.new('double[' .. p .. ']')
+	local n = #iRe+1
+	local scratchRe, scratchIm = {},{}
 
 	for u = 0, m - 1 do
 		local k = u
@@ -233,7 +233,8 @@ local function butterflyG(iRe, iIm, oidx, fstride, twRe, twIm, isInverse, m, p)
 			iIm[oidx+k] = scratchIm[0]
 			for q=1, p-1 do
 				twidx = twidx + fstride * k
-				if twidx >= n then twidx = twidx - n end
+				--if twidx >= n then twidx = twidx - n end
+				twidx = ((twidx - 1) % n) + 1
 				iRe[oidx+k] = iRe[oidx+k] + (scratchRe[q] * twRe[1+twidx] - scratchIm[q] * twIm[1+twidx])
 				iIm[oidx+k] = iIm[oidx+k] + (scratchRe[q] * twIm[1+twidx] + scratchIm[q] * twRe[1+twidx])
 			end
