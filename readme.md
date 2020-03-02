@@ -3,7 +3,7 @@ zfft
 
 ### Info
 
-zfft is a fast (enough) LÖVE/luaJIT-powered rewrite of luafft by @h4rm, which in turn is an implementation of kissfft by @mborgerding.
+zfft started out as a fast (enough) luaJIT-powered rewrite of luafft by @h4rm, which in turn is an implementation of kissfft by @mborgerding; but in the end got a bit more features.
 
 There are two versions of this library:
 - A single file version in src/lua, which works with lua version 5.1 (and may work with others, although at least luaJIT is still recommended for performance reasons)
@@ -32,6 +32,7 @@ src/lua:
 ```
 
 src/love:
+
 *An audio visualization library utilizing this library will be linked here, when it's done...*
 
 ### API (src/lua)
@@ -87,9 +88,12 @@ All four of the above support multiple input types:
 - Two input luaJIT FFI double arrays (real and imaginary)
 - One input LÖVE SoundData (one channel only) (real only)
 - Two input LÖVE SoundDatas (both one channel only) (real and imaginary)
+
 In the above 6 cases, the input(s) will be converted to LÖVE ByteData objects.
+
 - One input LÖVE ByteData (sized to input size * size(double)) (real only)
 - Two input LÖVE ByteData (both sized to input size * size(double)) (real and imaginary)
+
 In the above 8 cases, the functions will return two LÖVE ByteData objects with the results.
 
 In case of passing in 4 LÖVE ByteData objects (each sized to input size * size(double)), the second pair will be used to put the results into, in which case one may omit using the function's return values.
@@ -105,10 +109,12 @@ The main take-away should be that the threaded variant isn't much faster in any 
 
 #### V1.0
 
-	First release.
+	- First release.
 
 #### TODO:
-- Fix butterfly functions of radix 5 and the generic one, current implementations show ringing with pure tones. (This isn't an issue if one sticks to power of two input sizes.)
+
+	- Fix butterfly functions of radix 5 and the generic one, current implementations show ringing with pure tones.
+	  (This isn't an issue if one sticks to power of two input sizes.)
 
 ### License
 This library licensed under the ISC License.
