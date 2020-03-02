@@ -14,11 +14,14 @@
 -- - Threaded complex fft and ifft (WIP)
 -- - Micro-optimizations
 --   - math.pi / pi
---   - if-else chain / enum jumptable / enum jt + metatable for nil indexing
 
 local current_folder = (...):match("(.-)[^%.]+$")
 local ffi = require 'ffi'
-local cos,sin,pi = math.cos,math.sin,math.pi
+local cos, sin, pi = math.cos, math.sin, math.pi
+-- PERF TEST: math.pi localizing
+-- localized:      11 us - 14 us | 336 us - 371 us
+-- in math module: 11 us - 15 us | 342 us - 380 us
+-- Yeah, keep it local.
 
 local bfyEnum = require(current_folder .. 'zorgfft_butterfly')
 
