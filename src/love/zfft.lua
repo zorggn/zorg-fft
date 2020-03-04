@@ -57,7 +57,7 @@ local function calculateFactors(n)
 end
 
 -- Include butterfly functions
-local bfyEnum = require(current_folder .. 'zorgfft_butterfly')
+local bfyEnum = require(current_folder .. 'zfft_butterfly')
 
 -- Computational functions
 
