@@ -919,7 +919,7 @@ local function setupThreads(tc)
 			-- Clear toThread queue, since the query events never got processed... duh.
 			toThread[i]:clear()
 			-- Require in the thread code.
-			thread[i] = love.thread.newThread(current_folder:gsub('%.','%/') .. '/zorgfft_thread.lua')
+			thread[i] = love.thread.newThread(current_folder:gsub('%.','%/') .. '/zfft_thread.lua')
 			-- Start processing (we'll pass fromThread from the work_t function, since calls can originate from other threads.)
 			-- We still need to pass the toThread channel though.
 			thread[i]:start(toThread[i], current_folder)
