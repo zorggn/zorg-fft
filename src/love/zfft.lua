@@ -265,7 +265,7 @@ local function fft(inputRe, inputIm, outputRe, outputIm)
 	end
 
 	assert(n <= maxTwiddleSize,
-		("Detected input size (%d) smaller than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
+		("Detected input size (%d) larger than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
 
 	-- These "twiddle" arrays also need to be LöVE ByteData, so we can pass pointers around across threads.
 	local twiddlesRePtr = ffi.cast("double *", twiddlesRe:getFFIPointer())
@@ -448,7 +448,7 @@ local function ifft(inputRe, inputIm, outputRe, outputIm)
 	end
 
 	assert(n <= maxTwiddleSize,
-		("Detected input size (%d) smaller than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
+		("Detected input size (%d) larger than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
 
 	-- These "twiddle" arrays also need to be LöVE ByteData, so we can pass pointers around across threads.
 	local twiddlesRePtr = ffi.cast("double *", twiddlesRe:getFFIPointer())
@@ -634,7 +634,7 @@ local function fft_t(inputRe, inputIm, outputRe, outputIm)
 	end
 
 	assert(n <= maxTwiddleSize,
-		("Detected input size (%d) smaller than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
+		("Detected input size (%d) larger than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
 
 	-- These "twiddle" arrays also need to be LöVE ByteData, so we can pass pointers around across threads.
 	local twiddlesRePtr = ffi.cast("double *", twiddlesRe:getFFIPointer())
@@ -821,7 +821,7 @@ local function ifft_t(inputRe, inputIm, outputRe, outputIm)
 	end
 
 	assert(n <= maxTwiddleSize,
-		("Detected input size (%d) smaller than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
+		("Detected input size (%d) larger than set size for twiddle arrays (%d)!"):format(n, maxTwiddleSize))
 
 	-- These "twiddle" arrays also need to be LöVE ByteData, so we can pass pointers around across threads.
 	local twiddlesRePtr = ffi.cast("double *", twiddlesRe:getFFIPointer())
